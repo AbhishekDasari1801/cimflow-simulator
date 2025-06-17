@@ -1,0 +1,153 @@
+# CIMFlow-Inspired CNN Simulator
+
+This repository contains a lightweight Python-based **Compute-in-Memory (CIM)** inspired simulator for running a **1-layer CNN** followed by a **fully connected (FC)** layer. The simulator mimics CIM-style instruction execution with cycle and energy estimation support.
+
+---
+
+## 📌 Features
+
+- Custom Instruction Set (SC_ADDI, LOAD, STORE, CIM_MVM, ADD, MUL, RELU, etc.)
+- CNN patch tiling and convolution (1-layer)
+- Fully connected layer simulation
+- Instruction-level simulation with cycle count and energy tracking
+- Output verification against NumPy reference
+
+---
+
+## 📁 Folder Structure
+
+```
+├── compiler/
+│   ├── cnn_compiler.py        # Generates ISA and patches for CNN layer
+│   ├── fc_compiler.py         # Generates ISA and data for FC layer
+│   ├── verify_cnn.py          # NumPy check for CNN
+│   ├── verify_fc.py           # NumPy check for FC
+│   └── *.npy                  # Input/output: image, weights, biases, etc.
+│
+├── simulator/
+│   ├── simulator.py           # Core simulator engine
+│   ├── program.isa            # Instructions for CNN or FC
+│   └── sim_output.npy         # Output from simulator (FC)
+
+```
+
+---
+
+## 🚀 How to Run
+
+### 1. Setup
+```bash
+sudo apt update && sudo apt install python3-pip
+python3 -m venv env
+source env/bin/activate
+pip install numpy
+```
+
+### 2. Compile and Run CNN Layer
+```bash
+cd compiler
+python3 cnn_compiler.py             # Generates CNN ISA and input_image.npy
+cd ../simulator
+python3 simulator.py program.isa    # Outputs cnn_output.npy
+```
+
+### 3. Compile and Run FC Layer
+```bash
+cd ../compiler
+python3 fc_compiler.py              # Uses cnn_output.npy
+cd ../simulator
+python3 simulator.py program_fc.isa # Outputs sim_output.npy
+```
+
+### 4. Verify Results
+```bash
+cd ../compiler
+python3 verify_cnn.py
+python3 verify_fc.py
+```
+
+---
+
+## 📊 Output Example
+Final Register States: [0, 450, np.int64(4), 26, 29, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+🧠 CNN Output Feature Map:
+[[36 24 39  7 33 27]
+ [45 41 17 41 35 40]
+ [37 43 26 27 44 30]
+ [47 40 44 48 30 39]
+ [38 29 24 26 36 25]
+ [54 52 43 41 29 29]]
+
+Execution Summary
+---------------------
+Total Instructions Executed: 181
+Total Cycles Taken         : 1045
+Instruction Usage Stats:
+  - LOAD: 1 times (×1 cycles)
+  - SC_ADDI: 72 times (×1 cycles)
+  - CIM_MVM: 36 times (×25 cycles)
+  - RELU: 36 times (×1 cycles)
+  - STORE: 36 times (×1 cycles)
+
+Energy Usage Report (approx., in picojoules)
+---------------------------------------------
+  - LOAD: 0.20 pJ (1 × 0.2 pJ)
+  - SC_ADDI: 3.60 pJ (72 × 0.05 pJ)
+  - CIM_MVM: 90.00 pJ (36 × 2.5 pJ)
+  - RELU: 1.80 pJ (36 × 0.05 pJ)
+  - STORE: 7.20 pJ (36 × 0.2 pJ)
+
+⚡ Total Energy Consumed : 102.80 pJ
+⚡ Average Energy/Instr  : 0.568 pJ
+
+✅ Simulator output saved to sim_output.npy: 29
+```
+✅ CNN output saved to cnn_output.npy:
+[[25 20 21 18 33 40]
+ ... ]
+
+✅ FC output saved to sim_output.npy: [1627 1579 ...]
+
+Execution Summary
+------------------
+Total Instructions Executed: 182
+Total Cycles Taken: 932
+Total Energy: 48.25 pJ
+```
+
+---
+
+## 📌 Supported Instructions
+| Mnemonic   | Operation                              |
+|------------|-----------------------------------------|
+| LOAD       | Load value from memory into register    |
+| STORE      | Store register value into memory        |
+| SC_ADDI    | Add immediate to register               |
+| ADD        | Register addition                       |
+| MUL        | Register multiplication                 |
+| RELU       | Apply ReLU activation                   |
+| CIM_MVM    | Simulated Matrix-Vector Multiplication  |
+| VEC_ADD    | Vector addition                         |
+| CLEAR      | Clear register (set to 0)               |
+
+---
+
+## 📚 Credits
+Inspired by **CIMFlow**: an integrated framework for mapping DNNs to digital CIM architectures.
+
+Created and tested by: **Abhishek Dasari**
+
+---
+
+## 🧠 Next Goals
+- Multi-layer CNN support
+- MaxPooling + activation
+- Automatic ONNX -> ISA compiler
+- GUI or waveform visualizer
+
+---
+
+## 📬 Contact
+Feel free to reach out for collaboration or suggestions!
+

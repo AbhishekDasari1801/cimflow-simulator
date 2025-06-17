@@ -1,0 +1,69 @@
+# simulator.py
+import numpy as np
+
+# Initialize Registers and Memory
+registers = [0] * 8  # 8 general-purpose registers
+memory = np.zeros((1024,), dtype=int)  # 1 KB memory
+weights = np.random.randint(0, 5, (512, 64))  # Simulated CIM weight macro
+mac_input = np.random.randint(0, 5, (64,))    # Input vector
+
+# Simulated Instruction Format (just using Python objects for now)
+def load_instructions(filename):
+    instructions = []
+    with open(filename, "r") as f:
+        for line in f:
+            parts = line.strip().split()
+            if not parts or parts[0].startswith("#"):
+                continue  # Skip empty lines or comments
+            op = parts[0]
+            if op == "SC_ADDI":
+                instructions.append({
+                    "op": op, "rd": int(parts[1]),
+                    "rs": int(parts[2]), "imm": int(parts[3])
+                })
+            elif op == "MEM_CPY":
+                instructions.append({
+                    "op": op, "src": int(parts[1]),
+                    "dst": int(parts[2])
+                })
+            elif op == "CIM_MVM":
+                instructions.append({
+                    "op": op, "rs": int(parts[1]),
+                    "rt": int(parts[2]), "rd": int(parts[3])
+                })
+
+	   elif op == "LOAD":
+	   elif op == "LOAD":
+	   elif op == "LOAD":
+
+
+instructions = load_instructions("program.isa")
+
+# Simulator Loop
+for instr in instructions:
+    op = instr["op"]
+    
+    if op == "SC_ADDI":
+        rd = instr["rd"]
+        rs = instr["rs"]
+        imm = instr["imm"]
+        registers[rd] = registers[rs] + imm
+        print(f"[SC_ADDI] R{rd} = R{rs}({registers[rs]}) + {imm} → {registers[rd]}")
+    
+    elif op == "MEM_CPY":
+        src = instr["src"]
+        dst = instr["dst"]
+        memory[dst] = memory[src]
+        print(f"[MEM_CPY] memory[{dst}] = memory[{src}]({memory[src]})")
+    
+    elif op == "CIM_MVM":
+        rs = instr["rs"]
+        rt = instr["rt"]
+        rd = instr["rd"]
+        # Simulate MVM: output = weights × input
+        output = np.dot(weights, mac_input)
+        registers[rd] = output[0]  # just store first element for now
+        print(f"[CIM_MVM] R{rd} = weights × input_vector → {registers[rd]}")
+
+print("\nFinal Register States:", registers)
+
