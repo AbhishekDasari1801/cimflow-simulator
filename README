@@ -102,19 +102,6 @@ Energy Usage Report (approx., in picojoules)
 ⚡ Average Energy/Instr  : 0.568 pJ
 
 ✅ Simulator output saved to sim_output.npy: 29
-```
-✅ CNN output saved to cnn_output.npy:
-[[25 20 21 18 33 40]
- ... ]
-
-✅ FC output saved to sim_output.npy: [1627 1579 ...]
-
-Execution Summary
-------------------
-Total Instructions Executed: 182
-Total Cycles Taken: 932
-Total Energy: 48.25 pJ
-```
 
 ---
 
